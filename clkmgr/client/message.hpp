@@ -20,8 +20,8 @@
 #include <map>
 #include <memory>
 
+#include <client/client_state.hpp>
 #include <common/message.hpp>
-#include "clkmgr_client_state.hpp"
 
 __CLKMGR_NAMESPACE_BEGIN
 
