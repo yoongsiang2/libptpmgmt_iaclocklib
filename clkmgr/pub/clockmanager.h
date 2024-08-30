@@ -16,7 +16,8 @@
 
 #ifdef __cplusplus
 #include <map>
-#include <client/client_state.hpp>
+
+#include <clkmgr/client_state.h>
 #include <clkmgr/event_state.h>
 #include <clkmgr/subscription.h>
 #include <clkmgr/utility.h>

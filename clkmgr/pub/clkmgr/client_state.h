@@ -3,25 +3,23 @@
  * SPDX-FileCopyrightText: Copyright © 2024 Intel Corporation.
  */
 
-/** @file client_state.hpp
- * @brief Set and get the client subscribe event state
+/** @file client_state.h
+ * @brief Class to get and set the state of client-runtime
  *
  * @author Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>
  * @copyright © 2024 Intel Corporation.
  *
  */
 
-#ifndef PROXY_CLIENT_STATE
-#define PROXY_CLIENT_STATE
+#ifndef CLKMGR_CLIENT_STATE_H
+#define CLKMGR_CLIENT_STATE_H
 
 #include <atomic>
 #include <string>
 
 #include <clkmgr/event_state.h>
 #include <clkmgr/subscription.h>
-#include <common/clkmgrtypes.hpp>
-#include <common/transport.hpp>
-#include <common/util.hpp>
+#include <clkmgr/utility.h>
 
 __CLKMGR_NAMESPACE_BEGIN
 
@@ -33,10 +31,7 @@ class ClientState
   private:
     std::atomic_bool connected = false; /**< Connection status */
     std::atomic_bool subscribed = false; /**< Subscription status */
-    /**
-     * Session ID
-     */
-    sessionId_t sessionId = InvalidSessionId;
+    sessionId_t sessionId = InvalidSessionId; /**< Session ID */
     TransportClientId clientID = {}; /**< Client ID */
     uint8_t ptp4l_id = 0; /**< PTP4L ID */
     clkmgr_state eventState = {}; /**< Event state */
@@ -152,4 +147,4 @@ class ClientState
 
 __CLKMGR_NAMESPACE_END
 
-#endif /* PROXY_CLIENT_STATE */
+#endif /* CLKMGR_CLIENT_STATE_H */

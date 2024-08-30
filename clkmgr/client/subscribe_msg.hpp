@@ -16,8 +16,8 @@
 #ifndef CLIENT_SUBSCRIBE_MSG_HPP
 #define CLIENT_SUBSCRIBE_MSG_HPP
 
-#include <client/client_state.hpp>
 #include <client/message.hpp>
+#include <clkmgr/client_state.h>
 #include <common/subscribe_msg.hpp>
 #include <rtpi/condition_variable.hpp>
 

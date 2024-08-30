@@ -16,8 +16,8 @@
 #include <iostream>
 #include <string>
 
-#include <client/client_state.hpp>
 #include <client/msgq_tport.hpp>
+#include <clkmgr/client_state.h>
 #include <common/clkmgrtypes.hpp>
 #include <common/message.hpp>
 #include <common/transport.hpp>
