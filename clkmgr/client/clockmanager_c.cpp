@@ -68,7 +68,7 @@ int clkmgr_c_status_wait(clkmgr_c_client_ptr client_ptr, int timeout,
     struct clkmgr_c_state *current_state,
     struct clkmgr_c_event_count *event_count)
 {
-    clkmgr::clkmgr_state_event_count eventCount = {};
+    clkmgr::ClkMgrEventCount eventCount;
     clkmgr::clkmgr_state state = {};
     int ret;
     ret = static_cast<clkmgr::ClkmgrClientApi *>
@@ -86,12 +86,15 @@ int clkmgr_c_status_wait(clkmgr_c_client_ptr client_ptr, int timeout,
         std::begin(current_state->gm_identity));
     if(ret == 0)
         return ret;
-    event_count->as_capable_event_count = eventCount.as_capable_event_count;
-    event_count->composite_event_count = eventCount.composite_event_count;
-    event_count->gm_changed_event_count = eventCount.gm_changed_event_count;
-    event_count->offset_in_range_event_count =
-        eventCount.offset_in_range_event_count;
-    event_count->synced_to_primary_clock_event_count =
-        eventCount.synced_to_primary_clock_event_count;
+    event_count->event_count[eventIASCapable] =
+        eventCount.get_event_count(clkmgr::eventIASCapable);
+    event_count->event_count[eventIComposite] =
+        eventCount.get_event_count(clkmgr::eventIComposite);
+    event_count->event_count[eventIGMChanged] =
+        eventCount.get_event_count(clkmgr::eventIGMChanged);
+    event_count->event_count[eventIGMOffset] =
+        eventCount.get_event_count(clkmgr::eventIGMOffset);
+    event_count->event_count[eventISyncedToPrimaryClock] =
+        eventCount.get_event_count(clkmgr::eventISyncedToPrimaryClock);
     return ret;
 }

@@ -74,7 +74,7 @@ class ClientSubscribeMessage : virtual public
 
     /* Reduce the corresponding eventCount */
     static void resetClientPtpEventStruct(sessionId_t sID,
-        clkmgr_state_event_count &eventCount);
+        ClkMgrEventCount &eventCount);
 };
 
 __CLKMGR_NAMESPACE_END

@@ -203,7 +203,7 @@ bool check_proxy_liveness(ClientState &appClientState)
  *                wait until there is event changes occurs.
  * @param clkmgr_state A reference to a clkmgr_state object where the current state
  *                  will be stored.
- * @param eventCount A reference to a clkmgr_state_event_count object where the
+ * @param eventCount A reference to a ClkMgrEventCount object where the
  *                   event counts will be stored.
  *
  * @return Returns true if there is event changes within the timeout period,
@@ -211,14 +211,14 @@ bool check_proxy_liveness(ClientState &appClientState)
  */
 int ClkmgrClientApi::clkmgr_status_wait(int timeout,
     clkmgr_state &clkmgr_state_ref,
-    clkmgr_state_event_count &eventCountRef)
+    ClkMgrEventCount &eventCountRef)
 {
     auto start = std::chrono::high_resolution_clock::now();
     auto end = (timeout == -1) ?
         std::chrono::time_point<std::chrono::high_resolution_clock>::max() :
         start + std::chrono::seconds(timeout);
     bool event_changes_detected = false;
-    clkmgr_state_event_count eventCount;
+    ClkMgrEventCount eventCount;
     clkmgr_state clkmgr_state;
     do {
         /* Check the liveness of the Proxy's message queue */
@@ -228,11 +228,11 @@ int ClkmgrClientApi::clkmgr_status_wait(int timeout,
         eventCount = appClientState.get_eventStateCount();
         clkmgr_state = appClientState.get_eventState();
         /* Check if any member of eventCount is non-zero */
-        if(eventCount.offset_in_range_event_count ||
-            eventCount.as_capable_event_count ||
-            eventCount.synced_to_primary_clock_event_count ||
-            eventCount.composite_event_count ||
-            eventCount.gm_changed_event_count) {
+        if(eventCount.get_event_count(eventIGMOffset) ||
+            eventCount.get_event_count(eventISyncedToPrimaryClock) ||
+            eventCount.get_event_count(eventIASCapable) ||
+            eventCount.get_event_count(eventIGMChanged) ||
+            eventCount.get_event_count(eventIComposite)) {
             event_changes_detected = true;
             break;
         }

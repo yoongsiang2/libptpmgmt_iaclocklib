@@ -35,7 +35,7 @@ class ClientState
     TransportClientId clientID = {}; /**< Client ID */
     uint8_t ptp4l_id = 0; /**< PTP4L ID */
     clkmgr_state eventState = {}; /**< Event state */
-    clkmgr_state_event_count eventStateCount = {}; /**< Event count */
+    ClkMgrEventCount eventStateCount = {}; /**< Event count */
     ClkMgrSubscription eventSub = {}; /**< Event subscription */
     struct timespec last_notification_time; /**< Last notification time */
 
@@ -97,7 +97,7 @@ class ClientState
      * @brief Get the event state counts
      * @return Reference to the event state counts
      */
-    clkmgr_state_event_count &get_eventStateCount();
+    ClkMgrEventCount &get_eventStateCount();
 
     /**
      * @brief Get the event state
@@ -109,7 +109,7 @@ class ClientState
      * @brief Set the event state counts
      * @param eCount Event state counts
      */
-    void set_eventStateCount(clkmgr_state_event_count eCount);
+    void set_eventStateCount(ClkMgrEventCount eCount);
 
     /**
      * @brief Set the event state

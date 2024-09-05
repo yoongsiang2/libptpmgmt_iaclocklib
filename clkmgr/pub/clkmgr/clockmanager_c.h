@@ -29,6 +29,22 @@ enum event_type {
     eventBLast = 1 << 4 /**< Last event */
 };
 
+#define CLKMGR_EVENT_MAX (32)
+
+/**
+ * @enum EventIndex
+ * @brief Index of events available for subscription. Each index corresponds to
+ * a specific event. The maximum number of events is defined by EVENT_MAX.
+ */
+enum event_index {
+    eventIGMOffset = 0, /**< Primary-secondary clock offset event */
+    eventISyncedToPrimaryClock = 1, /**< Synced to primary clock event */
+    eventIASCapable = 2, /**< IEEE 802.1AS capable event */
+    eventIGMChanged = 3, /**< Primary clock UUID changed event */
+    eventILast = 4, /**< Last single event */
+    eventIComposite = (CLKMGR_EVENT_MAX - 1) /**< Composite event */
+};
+
 /** Types for struct value */
 enum value_type {
     gm_offset,    /**< Primary-secondary clock offset */
@@ -62,11 +78,7 @@ struct clkmgr_c_state {
 
 /** Event count for the events */
 struct clkmgr_c_event_count {
-    uint64_t offset_in_range_event_count;         /**< Clk offset in range */
-    uint64_t gm_changed_event_count;              /**< Primary clk ID changed */
-    uint64_t as_capable_event_count;              /**< IEEE 802.1AS capable */
-    uint64_t synced_to_primary_clock_event_count; /**< Synced to primary clk */
-    uint64_t composite_event_count;               /**< Composite event */
+    uint64_t event_count[CLKMGR_EVENT_MAX];
 };
 
 /** Pointer to the client structure */

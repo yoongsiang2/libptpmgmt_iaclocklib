@@ -87,7 +87,7 @@ class ClkmgrClientApi
      *         and false otherwise.
      */
     int clkmgr_status_wait(int timeout, clkmgr_state &clkmgr_state,
-        clkmgr_state_event_count &eventCount);
+        ClkMgrEventCount &eventCount);
 };
 
 __CLKMGR_NAMESPACE_END

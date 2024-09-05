@@ -212,7 +212,7 @@ client_ptp_event *ClientSubscribeMessage::getClientPtpEventCompositeStruct(
 
 /* reduce the corresponding eventCount */
 void ClientSubscribeMessage::resetClientPtpEventStruct(sessionId_t sID,
-    clkmgr_state_event_count &eventCount)
+    ClkMgrEventCount &eventCount)
 {
     std::map <sessionId_t, std::array<client_ptp_event *, 2>>::iterator it;
     client_ptp_event *client_ptp_data = nullptr;
@@ -224,25 +224,28 @@ void ClientSubscribeMessage::resetClientPtpEventStruct(sessionId_t sID,
         return;
     }
     client_ptp_data->offset_in_range_event_count.fetch_sub(
-        eventCount.offset_in_range_event_count,
+        eventCount.get_event_count(eventIGMOffset),
         std::memory_order_relaxed);
     client_ptp_data->as_capable_event_count.fetch_sub(
-        eventCount.as_capable_event_count,
+        eventCount.get_event_count(eventIASCapable),
         std::memory_order_relaxed);
     client_ptp_data->synced_to_primary_clock_event_count.fetch_sub(
-        eventCount.synced_to_primary_clock_event_count,
+        eventCount.get_event_count(eventISyncedToPrimaryClock),
         std::memory_order_relaxed);
     client_ptp_data->gm_changed_event_count.fetch_sub(
-        eventCount.gm_changed_event_count,
+        eventCount.get_event_count(eventIGMChanged),
         std::memory_order_relaxed);
     client_ptp_data->composite_event_count.fetch_sub(
-        eventCount.composite_event_count,
+        eventCount.get_event_count(eventIComposite),
         std::memory_order_relaxed);
-    eventCount.offset_in_range_event_count =
-        client_ptp_data->offset_in_range_event_count;
-    eventCount.as_capable_event_count = client_ptp_data->as_capable_event_count;
-    eventCount.synced_to_primary_clock_event_count =
-        client_ptp_data->synced_to_primary_clock_event_count;
-    eventCount.gm_changed_event_count = client_ptp_data->gm_changed_event_count;
-    eventCount.composite_event_count = client_ptp_data->composite_event_count;
+    eventCount.set_event_count(eventIGMOffset,
+        client_ptp_data->offset_in_range_event_count);
+    eventCount.set_event_count(eventIASCapable,
+        client_ptp_data->as_capable_event_count);
+    eventCount.set_event_count(eventISyncedToPrimaryClock,
+        client_ptp_data->synced_to_primary_clock_event_count);
+    eventCount.set_event_count(eventIGMChanged,
+        client_ptp_data->gm_changed_event_count);
+    eventCount.set_event_count(eventIComposite,
+        client_ptp_data->composite_event_count);
 }

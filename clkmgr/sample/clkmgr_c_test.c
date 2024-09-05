@@ -233,19 +233,20 @@ int main(int argc, char *argv[])
         if (subscription.event & eventBGMOffset) {
             printf("| %-25s | %-12d | %-11ld |\n", "offset_in_range",
                 state.offset_in_range,
-                event_count.offset_in_range_event_count);
+                event_count.event_count[eventIGMOffset]);
         }
         if (subscription.event & eventBSyncedToPrimaryClock) {
             printf("| %-25s | %-12d | %-11ld |\n", "synced_to_primary_clock",
-               state.synced_to_primary_clock, event_count.synced_to_primary_clock_event_count);
+               state.synced_to_primary_clock,
+                event_count.event_count[eventISyncedToPrimaryClock]);
         }
         if (subscription.event & eventBASCapable) {
             printf("| %-25s | %-12d | %-11ld |\n", "as_capable",
-                state.as_capable, event_count.as_capable_event_count);
+                state.as_capable, event_count.event_count[eventIASCapable]);
         }
         if (subscription.event & eventBGMChanged) {
             printf("| %-25s | %-12d | %-11ld |\n", "gm_Changed",
-                state.gm_changed, event_count.gm_changed_event_count);
+                state.gm_changed, event_count.event_count[eventIGMChanged]);
             printf("+---------------------------+--------------+-------------+\n");
             printf("| %-25s |     %02x%02x%02x.%02x%02x.%02x%02x%02x     |\n",
                 "UUID", state.gm_identity[0], state.gm_identity[1],
@@ -260,7 +261,7 @@ int main(int argc, char *argv[])
         printf("+---------------------------+--------------+-------------+\n");
         if (subscription.composite_event) {
             printf("| %-25s | %-12d | %-11ld |\n", "composite_event",
-                   state.composite_event, event_count.composite_event_count);
+                   state.composite_event, event_count.event_count[eventIComposite]);
         }
         if (subscription.composite_event & eventBGMOffset) {
             printf("| - %-23s | %-12s | %-11s |\n", "offset_in_range", "", "");

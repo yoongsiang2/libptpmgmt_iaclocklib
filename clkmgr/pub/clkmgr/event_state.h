@@ -15,6 +15,7 @@
 #define CLKMGR_EVENT_STATE_H
 
 #include <cstdint>
+#include <iostream>
 
 #include <clkmgr/utility.h>
 
@@ -32,7 +33,8 @@ typedef enum : std::uint8_t {
     eventISyncedToPrimaryClock = 1, /**< Synced to primary clock event */
     eventIASCapable = 2, /**< IEEE 802.1AS capable event */
     eventIGMChanged = 3, /**< Primary clock UUID changed event */
-    eventIComposite = 31 /**< Composite event */
+    eventILast = 4, /**< Last single event */
+    eventIComposite = (EVENT_MAX - 1) /**< Composite event */
 } EventIndex;
 
 /**
@@ -50,28 +52,43 @@ struct clkmgr_state {
 };
 
 /**
- * Event count for the events
- */
-struct clkmgr_state_event_count {
-    uint64_t offset_in_range_event_count; /**< Clk offset in range */
-    uint64_t gm_changed_event_count; /**< Primary clk ID changed */
-    uint64_t as_capable_event_count; /**< IEEE 802.1AS capable */
-    uint64_t synced_to_primary_clock_event_count; /**< Synced to primary clk */
-    uint64_t composite_event_count; /**< Composite event */
-};
-
-/**
  * @class ClkMgrEventCount
- * @brief Class to store the event count.
+ * @brief Class to store the count of event state changes.
  */
 class ClkMgrEventCount
 {
   private:
-    std::array<uint64_t, EVENT_MAX> event_count; /**< upper & lower limits */
+    std::array<uint64_t, EVENT_MAX> event_count; /**< Event count */
 
   public:
     ClkMgrEventCount() noexcept : event_count{} {} /**< Zero-initialize */
-    DECLARE_ACCESSOR(event_count); /**< vent count accessor */
+
+   /**
+     * @brief Get the event count for specific event.
+     * @param index The index of the event to get.
+     * @return The event count of event at specified index.
+     */
+    uint64_t get_event_count(std::uint8_t index) const {
+        if (index < eventILast || index == eventIComposite) {
+            return event_count[index];
+        }
+        std::cerr << "Index out of range" << std::endl;
+        return 0;
+    }
+
+    /**
+     * @brief Set the event count for specific index.
+     * @param index The index of the event to set.
+     * @param count The event count to set.
+     * @throws std::out_of_range if the index is out of range.
+     */
+    void set_event_count(std::uint8_t index, uint64_t count) {
+        if (index < eventILast || index == eventIComposite) {
+            event_count[index] = count;
+            return;
+        }
+        std::cerr << "Index out of range" << std::endl;
+    }
 };
 
 __CLKMGR_NAMESPACE_END

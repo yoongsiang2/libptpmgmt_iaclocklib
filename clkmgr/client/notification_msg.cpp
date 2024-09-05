@@ -116,7 +116,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             currentClientState->set_last_notification_time(last_notification_time);
         clkmgr_state &clkmgrCurrentState =
             currentClientState->get_eventState();
-        clkmgr_state_event_count &clkmgrCurrentEventCount =
+        ClkMgrEventCount &clkmgrCurrentEventCount =
             currentClientState->get_eventStateCount();
         eventSub = currentClientState->get_eventSub().c_get_val_event_mask();
         composite_eventSub =
@@ -210,16 +210,16 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             composite_client_ptp_data->composite_event;
         memcpy(clkmgrCurrentState.gm_identity, client_ptp_data->gm_identity,
             sizeof(client_ptp_data->gm_identity));
-        clkmgrCurrentEventCount.offset_in_range_event_count =
-            client_ptp_data->offset_in_range_event_count;
-        clkmgrCurrentEventCount.as_capable_event_count =
-            client_ptp_data->as_capable_event_count;
-        clkmgrCurrentEventCount.synced_to_primary_clock_event_count =
-            client_ptp_data->synced_to_primary_clock_event_count;
-        clkmgrCurrentEventCount.gm_changed_event_count =
-            client_ptp_data->gm_changed_event_count;
-        clkmgrCurrentEventCount.composite_event_count =
-            client_ptp_data->composite_event_count;
+        clkmgrCurrentEventCount.set_event_count(eventIGMOffset,
+            client_ptp_data->offset_in_range_event_count);
+        clkmgrCurrentEventCount.set_event_count(eventIASCapable,
+            client_ptp_data->as_capable_event_count);
+        clkmgrCurrentEventCount.set_event_count(eventISyncedToPrimaryClock,
+            client_ptp_data->synced_to_primary_clock_event_count);
+        clkmgrCurrentEventCount.set_event_count(eventIGMChanged,
+            client_ptp_data->gm_changed_event_count);
+        clkmgrCurrentEventCount.set_event_count(eventIComposite,
+            client_ptp_data->composite_event_count);
     }
     return true;
 }
