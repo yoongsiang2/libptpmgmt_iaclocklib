@@ -114,40 +114,6 @@ typedef enum : std::uint8_t {
 } eventType;
 
 /**
- * Class to hold event mask
- */
-class clkmgr_event
-{
-  private:
-    /**
-     * Event mask
-     */
-    std::uint32_t event_mask[eventLast / (sizeof(std::uint32_t)*BITS_PER_BYTE) + 1];
-    /**
-     * Reserved events
-     */
-    std::uint32_t reserved[MAX_EVENT_COUNT /
-                        sizeof(event_mask[0]*BITS_PER_BYTE)
-                        - sizeof(event_mask) / sizeof(std::uint32_t)];
-  public:
-    std::uint8_t *parse(std::uint8_t *buf, std::size_t &length);
-    std::uint8_t *write(std::uint8_t *buf, std::size_t &length);
-    void zero();
-    bool equal(const clkmgr_event &c);
-    bool operator== (const clkmgr_event &event) { return this->equal(event); }
-    bool operator!= (const clkmgr_event &event) { return !this->equal(event); }
-    std::string toString();
-    int8_t writeEvent(uint32_t *newEvent, std::size_t length);
-    int8_t readEvent(uint32_t *readEvnt, std::size_t length);
-    int8_t copyEventMask(clkmgr_event &newEvent);
-    /**
-     * Get the event mask
-     * @return Pointer to the event mask
-     */
-    std::uint32_t *getEventMask() { return event_mask; }
-};
-
-/**
  * Class to hold event counts
  */
 class clkmgr_eventcount

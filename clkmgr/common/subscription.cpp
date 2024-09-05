@@ -63,65 +63,6 @@ bool clkmgr_value::equal(const clkmgr_value &c)
     return false;
 }
 
-int8_t clkmgr_event::writeEvent(uint32_t *newEvent, std::size_t newEventlength)
-{
-    if(newEvent == nullptr || sizeof(event_mask) < newEventlength) {
-        PrintDebug("clkmgr_event::writeEvent failure");
-        return -1;
-    }
-    memcpy(this->event_mask, newEvent, newEventlength);
-    return 0;
-}
-
-int8_t clkmgr_event::readEvent(uint32_t *readEvnt, std::size_t eventLength)
-{
-    if(readEvnt == nullptr || sizeof(event_mask) > eventLength) {
-        PrintDebug("clkmgr_event::readEvent failure");
-        return -1;
-    }
-    memcpy(readEvnt, this->event_mask, eventLength);
-    return 0;
-}
-
-int8_t clkmgr_event::copyEventMask(clkmgr_event &newEvent)
-{
-    std::size_t newEventLength = sizeof(newEvent.getEventMask());
-    if(sizeof(event_mask) < newEventLength) {
-        PrintDebug("clkmgr_event::copyEventMask failure");
-        return -1;
-    }
-    memcpy(event_mask, newEvent.event_mask, newEventLength);
-    return 0;
-}
-
-uint8_t *clkmgr_event::parse(uint8_t *buf, std::size_t &length)
-{
-    return buf;
-}
-
-uint8_t *clkmgr_event::write(uint8_t *buf, std::size_t &length)
-{
-    for(size_t i = 0; i < sizeof(event_mask) / sizeof(event_mask[0]) &&
-        buf != nullptr; ++i)
-        buf += WRITE_FIELD(event_mask[i], buf, length);
-    memset(reserved, 0, sizeof(reserved));
-    return buf;
-}
-
-void clkmgr_event::zero()
-{
-    for(size_t i = 0; i < sizeof(event_mask) / sizeof(event_mask[0]); ++i)
-        event_mask[i] = 0;
-    memset(reserved, 0, sizeof(reserved));
-}
-
-bool clkmgr_event::equal(const clkmgr_event &c)
-{
-    if(memcmp(this->event_mask, c.event_mask, sizeof(event_mask)) == 0)
-        return true;
-    return false;
-}
-
 uint8_t *clkmgr_eventcount::parse(uint8_t *buf, std::size_t &length)
 {
     return buf;
@@ -153,12 +94,5 @@ std::string clkmgr_value::toString()
 {
     std::string name = "clkmgr_value : upper " + to_string(this->value->upper) +
         " lower : " +  to_string(this->value->lower) + "\n";
-    return name;
-}
-
-std::string clkmgr_event::toString()
-{
-    std::string name = "clkmgr_event : event[0] = " +
-        to_string(this->event_mask[0]) + "\n";
     return name;
 }
