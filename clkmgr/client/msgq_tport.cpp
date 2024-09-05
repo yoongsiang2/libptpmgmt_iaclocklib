@@ -126,8 +126,8 @@ cmsg is nullptr!!\n");
                 return false;
             }
             PrintDebug("[ClientMessageQueue] [SUBSCRIBE] : \
-subscription->event Mask : " +
-                cmsg->getSubscription().get_event().toString());
+                subscription->event Mask : " +
+                std::to_string(cmsg->getSubscription().get_event_mask()));
             break;
         }
         default: {

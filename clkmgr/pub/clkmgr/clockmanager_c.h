@@ -44,9 +44,9 @@ struct value {
 
 /** Subscription structure for the events */
 struct clkmgr_c_subscription {
-    uint32_t event[1];                    /**< Events subscription */
+    uint32_t event;                       /**< Events subscription */
     struct value value[value_last];       /**< Limits */
-    uint32_t composite_event[1];          /**< Composite events subscription */
+    uint32_t composite_event;             /**< Composite events subscription */
 };
 
 /** Current State for the events */

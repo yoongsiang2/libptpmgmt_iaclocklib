@@ -92,12 +92,12 @@ bool ClkmgrClientApi::clkmgr_subscribe(clkmgr_subscription &newSub,
         PrintDebug("[clkmgr::subscribe] subscribeMsgcreation is OK !!\n");
     cmsg->setClientState(&appClientState);
     /* Write the current event subscription */
-    appClientState.get_eventSub().set_event(newSub.getc_event());
+    appClientState.get_eventSub().set_event_mask(newSub.getc_event_mask());
     appClientState.get_eventSub().set_value(newSub.getc_value());
-    appClientState.get_eventSub().set_composite_event(
-        newSub.getc_composite_event());
+    appClientState.get_eventSub().set_composite_event_mask(
+        newSub.getc_composite_event_mask());
     /* Copy the event Mask */
-    cmsg->getSubscription().get_event().copyEventMask(newSub.get_event());
+    cmsg->getSubscription().set_event_mask(newSub.getc_event_mask());
     strcpy((char *)cmsg->getClientId().data(),
         (char *)appClientState.get_clientID().data());
     cmsg->set_sessionId(appClientState.get_sessionId());

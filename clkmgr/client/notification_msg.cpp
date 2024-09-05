@@ -105,8 +105,8 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
     /* Need to walk thru the whole vector */
     std::vector <ClientState *>::iterator it ;
     for(it = ClientStateArray.begin(); it < ClientStateArray.end(); it++) {
-        std::uint32_t eventSub[1];
-        std::uint32_t composite_eventSub[1];
+        std::uint32_t eventSub;
+        std::uint32_t composite_eventSub;
         ClientState *currentClientState = *it;
         struct timespec last_notification_time = {};
         if(clock_gettime(CLOCK_MONOTONIC, &last_notification_time) == -1)
@@ -118,11 +118,9 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             currentClientState->get_eventState();
         clkmgr_state_event_count &clkmgrCurrentEventCount =
             currentClientState->get_eventStateCount();
-        currentClientState->get_eventSub().get_event().readEvent(eventSub,
-            (std::size_t)sizeof(eventSub));
-        currentClientState->get_eventSub().get_composite_event().readEvent(
-            composite_eventSub,
-            (std::size_t)sizeof(composite_eventSub));
+        eventSub = currentClientState->get_eventSub().c_get_val_event_mask();
+        composite_eventSub =
+            currentClientState->get_eventSub().c_get_val_composite_event_mask();
         /* Get the correct client_ptp_data according to our current sessionID */
         client_ptp_event *client_ptp_data = nullptr;
         client_ptp_data = ClientSubscribeMessage::getClientPtpEventStruct(
@@ -140,7 +138,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
                 ERROR in obtaining client_ptp_data.\n");
             return false;
         }
-        if((eventSub[0] & 1 << gmOffsetEvent) &&
+        if((eventSub & 1 << gmOffsetEvent) &&
             (proxy_data.master_offset != client_ptp_data->master_offset)) {
             client_ptp_data->master_offset = proxy_data.master_offset;
             if((client_ptp_data->master_offset > lower_master_offset) &&
@@ -158,7 +156,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
                 }
             }
         }
-        if((eventSub[0] & 1 << syncedToPrimaryClockEvent) &&
+        if((eventSub & 1 << syncedToPrimaryClockEvent) &&
             (proxy_data.synced_to_primary_clock !=
                 client_ptp_data->synced_to_primary_clock)) {
             client_ptp_data->synced_to_primary_clock =
@@ -166,7 +164,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             client_ptp_data->synced_to_primary_clock_event_count.fetch_add(1,
                 std::memory_order_relaxed);
         }
-        if((eventSub[0] & 1 << gmChangedEvent) &&
+        if((eventSub & 1 << gmChangedEvent) &&
             (memcmp(client_ptp_data->gm_identity, proxy_data.gm_identity,
                     sizeof(proxy_data.gm_identity)) != 0)) {
             memcpy(client_ptp_data->gm_identity, proxy_data.gm_identity,
@@ -176,17 +174,17 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             clkmgrCurrentState.gm_changed = true;
         } else
             clkmgrCurrentState.gm_changed = false;
-        if((eventSub[0] & 1 << asCapableEvent) &&
+        if((eventSub & 1 << asCapableEvent) &&
             (proxy_data.as_capable != client_ptp_data->as_capable)) {
             client_ptp_data->as_capable = proxy_data.as_capable;
             client_ptp_data->as_capable_event_count.fetch_add(1,
                 std::memory_order_relaxed);
         }
-        if(composite_eventSub[0]) {
+        if(composite_eventSub) {
             old_composite_event = composite_client_ptp_data->composite_event;
             composite_client_ptp_data->composite_event = true;
         }
-        if(composite_eventSub[0] & 1 << gmOffsetEvent) {
+        if(composite_eventSub & 1 << gmOffsetEvent) {
             composite_client_ptp_data->master_offset = proxy_data.master_offset;
             if((composite_client_ptp_data->master_offset > lower_master_offset) &&
                 (composite_client_ptp_data->master_offset < upper_master_offset))
@@ -194,12 +192,12 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             else
                 composite_client_ptp_data->composite_event = false;
         }
-        if(composite_eventSub[0] & 1 << syncedToPrimaryClockEvent)
+        if(composite_eventSub & 1 << syncedToPrimaryClockEvent)
             composite_client_ptp_data->composite_event &=
                 proxy_data.synced_to_primary_clock;
-        if(composite_eventSub[0] & 1 << asCapableEvent)
+        if(composite_eventSub & 1 << asCapableEvent)
             composite_client_ptp_data->composite_event &= proxy_data.as_capable;
-        if(composite_eventSub[0] &&
+        if(composite_eventSub &&
             (old_composite_event != composite_client_ptp_data->composite_event))
             client_ptp_data->composite_event_count.fetch_add(1,
                 std::memory_order_relaxed);

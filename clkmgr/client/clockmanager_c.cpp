@@ -44,11 +44,10 @@ bool clkmgr_c_subscribe(clkmgr_c_client_ptr client_ptr,
     clkmgr::clkmgr_subscription newsub = {};
     clkmgr::clkmgr_state state = {};
     bool ret;
-    newsub.get_event().writeEvent(sub.event, sizeof(sub.event));
+    newsub.set_event_mask(sub.event);
     newsub.get_value().setValue(gm_offset, sub.value[gm_offset].upper,
         sub.value[gm_offset].lower);
-    newsub.get_composite_event().writeEvent(sub.composite_event,
-        sizeof(sub.composite_event));
+    newsub.set_composite_event_mask(sub.composite_event);
     ret = static_cast<clkmgr::ClkmgrClientApi *>(client_ptr)->clkmgr_subscribe(
             newsub, state);
     if(ret == false)

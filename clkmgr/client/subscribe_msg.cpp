@@ -58,19 +58,17 @@ void ClientSubscribeMessage::setClientState(ClientState *newClientState)
 PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
 {
     ptp_event data = {};
-    std::uint32_t eventSub[1];
+    std::uint32_t eventSub;
     struct timespec last_notification_time = {};
     if(clock_gettime(CLOCK_MONOTONIC, &last_notification_time) == -1)
         PrintDebug("ClientNotificationMessage::processMessage \
             clock_gettime failed.\n");
     else
         currentClientState->set_last_notification_time(last_notification_time);
-    currentClientState->get_eventSub().get_event().readEvent(eventSub,
-        (std::size_t)sizeof(eventSub));
-    std::uint32_t composite_eventSub[1];
-    currentClientState->get_eventSub().get_composite_event().readEvent(
-        composite_eventSub,
-        (std::size_t)sizeof(composite_eventSub));
+    eventSub = currentClientState->get_eventSub().c_get_val_event_mask();
+    std::uint32_t composite_eventSub;
+    composite_eventSub =
+        currentClientState->get_eventSub().c_get_val_composite_event_mask();
     PrintDebug("[ClientSubscribeMessage]::parseBuffer ");
     if(!CommonSubscribeMessage::parseBuffer(LxContext))
         return false;
@@ -101,29 +99,29 @@ PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
         client_data = it->second[0];
         composite_client_data = it->second[1];
     }
-    if((eventSub[0] & 1 << gmOffsetEvent) &&
+    if((eventSub & 1 << gmOffsetEvent) &&
         (data.master_offset != client_data->master_offset)) {
         client_data->master_offset = data.master_offset;
         if((client_data->master_offset > lower_master_offset) &&
             (client_data->master_offset < upper_master_offset))
             client_data->master_offset_in_range = true;
     }
-    if((eventSub[0] & 1 << syncedToPrimaryClockEvent) &&
+    if((eventSub & 1 << syncedToPrimaryClockEvent) &&
         (data.synced_to_primary_clock != client_data->synced_to_primary_clock))
         client_data->synced_to_primary_clock = data.synced_to_primary_clock;
-    if((eventSub[0] & 1 << gmChangedEvent) &&
+    if((eventSub & 1 << gmChangedEvent) &&
         (memcmp(client_data->gm_identity, data.gm_identity,
                 sizeof(data.gm_identity))) != 0) {
         memcpy(client_data->gm_identity, data.gm_identity,
             sizeof(data.gm_identity));
         clkmgrCurrentState->gm_changed = true;
     }
-    if((eventSub[0] & 1 << asCapableEvent) &&
+    if((eventSub & 1 << asCapableEvent) &&
         (data.as_capable != client_data->as_capable))
         client_data->as_capable = data.as_capable;
-    if(composite_eventSub[0])
+    if(composite_eventSub)
         composite_client_data->composite_event = true;
-    if((composite_eventSub[0] & 1 << gmOffsetEvent) &&
+    if((composite_eventSub & 1 << gmOffsetEvent) &&
         (data.master_offset != composite_client_data->master_offset)) {
         composite_client_data->master_offset = data.master_offset;
         if((composite_client_data->master_offset > lower_master_offset) &&
@@ -132,9 +130,9 @@ PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
         else
             composite_client_data->composite_event = false;
     }
-    if(composite_eventSub[0] & 1 << syncedToPrimaryClockEvent)
+    if(composite_eventSub & 1 << syncedToPrimaryClockEvent)
         composite_client_data->composite_event &= data.synced_to_primary_clock;
-    if(composite_eventSub[0] & 1 << asCapableEvent)
+    if(composite_eventSub & 1 << asCapableEvent)
         composite_client_data->composite_event &= data.as_capable;
     clkmgrCurrentState->as_capable = client_data->as_capable;
     clkmgrCurrentState->offset_in_range = client_data->master_offset_in_range;

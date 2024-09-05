@@ -100,7 +100,7 @@ class clkmgr_value
 };
 
 #define BITS_PER_BYTE (8)
-#define MAX_EVENT_COUNT (128)
+#define MAX_EVENT_COUNT (32)
 
 /**
  * Types of PTP events subscription
@@ -172,13 +172,13 @@ class clkmgr_eventcount
 class clkmgr_subscription
 {
   private:
-    clkmgr_event        event; /**< Event subscription */
-    clkmgr_value        value; /**< value of upper and lower limits */
-    clkmgr_event        composite_event; /**< Composite event subscription */
+    std::uint32_t event_mask; /**< Event subscription mask */
+    clkmgr_value value; /**< value of upper and lower limits */
+    std::uint32_t composite_event_mask; /**< Composite event mask */
   public:
-    DECLARE_ACCESSOR(event); /**< Declare accessor for event */
+    DECLARE_ACCESSOR(event_mask); /**< Declare accessor for event */
     DECLARE_ACCESSOR(value); /**< Declare accessor for value */
-    DECLARE_ACCESSOR(composite_event); /**< Declare accessor for composite event */
+    DECLARE_ACCESSOR(composite_event_mask); /**< Declare accessor for composite event */
 };
 
 __CLKMGR_NAMESPACE_END
