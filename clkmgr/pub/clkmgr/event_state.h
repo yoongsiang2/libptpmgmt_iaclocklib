@@ -20,6 +20,21 @@
 
 __CLKMGR_NAMESPACE_BEGIN
 
+constexpr std::uint8_t EVENT_MAX = 32;
+
+/**
+ * @enum EventIndex
+ * @brief Index of events available for subscription. Each index corresponds to
+ * a specific event. The maximum number of events is defined by EVENT_MAX.
+ */
+typedef enum : std::uint8_t {
+    eventIGMOffset = 0, /**< Primary-secondary clock offset event */
+    eventISyncedToPrimaryClock = 1, /**< Synced to primary clock event */
+    eventIASCapable = 2, /**< IEEE 802.1AS capable event */
+    eventIGMChanged = 3, /**< Primary clock UUID changed event */
+    eventIComposite = 31 /**< Composite event */
+} EventIndex;
+
 /**
  * Current State for the events
  */
@@ -43,6 +58,20 @@ struct clkmgr_state_event_count {
     uint64_t as_capable_event_count; /**< IEEE 802.1AS capable */
     uint64_t synced_to_primary_clock_event_count; /**< Synced to primary clk */
     uint64_t composite_event_count; /**< Composite event */
+};
+
+/**
+ * @class ClkMgrEventCount
+ * @brief Class to store the event count.
+ */
+class ClkMgrEventCount
+{
+  private:
+    std::array<uint64_t, EVENT_MAX> event_count; /**< upper & lower limits */
+
+  public:
+    ClkMgrEventCount() noexcept : event_count{} {} /**< Zero-initialize */
+    DECLARE_ACCESSOR(event_count); /**< vent count accessor */
 };
 
 __CLKMGR_NAMESPACE_END

@@ -18,24 +18,10 @@
 #include <cstdint>
 #include <string>
 
+#include <clkmgr/event_state.h>
 #include <clkmgr/utility.h>
 
 __CLKMGR_NAMESPACE_BEGIN
-
-constexpr std::uint8_t EVENT_MAX = 32;
-
-/**
- * @enum EventIndex
- * @brief Index of events available for subscription. Each index corresponds to
- * a specific event. The maximum number of events is defined by EVENT_MAX.
- */
-typedef enum : std::uint8_t {
-    eventIGMOffset = 0, /**< Primary-secondary clock offset event */
-    eventISyncedToPrimaryClock = 1, /**< Synced to primary clock event */
-    eventIASCapable = 2, /**< IEEE 802.1AS capable event */
-    eventIGMChanged = 3, /**< Primary clock UUID changed event */
-    eventIComposite = 31 /**< Composite event */
-} EventIndex;
 
 /**
  * @enum EventBitmask
@@ -82,13 +68,13 @@ class ClkMgrSubscription
 
     std::uint32_t event_mask; /**< Event subscription mask */
     std::uint32_t composite_event_mask; /**< Composite event mask */
-    std::array<Threshold, THRESHOLD_MAX> threshold; /**< upper & lower limits */
+    std::array<Threshold, THRESHOLD_MAX> threshold; /**< Upper & lower limits */
 
   public:
     ClkMgrSubscription() noexcept : event_mask(0), composite_event_mask(0) {}
-    DECLARE_ACCESSOR(event_mask); /**<event mask accessor */
-    DECLARE_ACCESSOR(composite_event_mask); /**< composite event accessor */
-    DECLARE_ACCESSOR(threshold); /**< threshold accessor */
+    DECLARE_ACCESSOR(event_mask); /**< Event mask accessor */
+    DECLARE_ACCESSOR(composite_event_mask); /**< Composite event accessor */
+    DECLARE_ACCESSOR(threshold); /**< Threshold accessor */
 
     /**
      * @brief Define the upper and lower limits of a specific event
@@ -101,7 +87,7 @@ class ClkMgrSubscription
         std::int32_t lower);
 
     /**
-     * @brief Check whether a given value is within predifined threshold
+     * @brief Check whether a given value is within predefined threshold
      * @param[in] index Index of the event according to ThresholdIndex enum
      * @param[in] value Current value
      * @return Return true if value is within the threshold, and false otherwise
