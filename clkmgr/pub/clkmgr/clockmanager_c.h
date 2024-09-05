@@ -22,11 +22,11 @@ extern "C" {
 #include <stdint.h>
 
 enum event_type {
-    eventGMOffset = 1 << 0, /**< Primary-secondary clock offset event */
-    eventSyncedToPrimaryClock = 1 << 1, /**< Synced to primary clock event */
-    eventASCapable = 1 << 2, /**< IEEE 802.1AS capable event */
-    eventGMChanged = 1 << 3, /**< Primary clock UUID changed event */
-    eventLast = 1 << 4 /**< Last event */
+    eventBGMOffset = 1 << 0, /**< Primary-secondary clock offset event */
+    eventBSyncedToPrimaryClock = 1 << 1, /**< Synced to primary clock event */
+    eventBASCapable = 1 << 2, /**< IEEE 802.1AS capable event */
+    eventBGMChanged = 1 << 3, /**< Primary clock UUID changed event */
+    eventBLast = 1 << 4 /**< Last event */
 };
 
 /** Types for struct value */

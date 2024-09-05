@@ -95,29 +95,29 @@ PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
         client_data = it->second[0];
         composite_client_data = it->second[1];
     }
-    if((eventSub & eventGMOffset) &&
+    if((eventSub & eventBGMOffset) &&
         (data.master_offset != client_data->master_offset)) {
         client_data->master_offset = data.master_offset;
         if(currentClientState->get_eventSub().in_range(thresholdGMOffset,
                 client_data->master_offset))
             client_data->master_offset_in_range = true;
     }
-    if((eventSub & eventSyncedToPrimaryClock) &&
+    if((eventSub & eventBSyncedToPrimaryClock) &&
         (data.synced_to_primary_clock != client_data->synced_to_primary_clock))
         client_data->synced_to_primary_clock = data.synced_to_primary_clock;
-    if((eventSub & eventGMChanged) &&
+    if((eventSub & eventBGMChanged) &&
         (memcmp(client_data->gm_identity, data.gm_identity,
                 sizeof(data.gm_identity))) != 0) {
         memcpy(client_data->gm_identity, data.gm_identity,
             sizeof(data.gm_identity));
         clkmgrCurrentState->gm_changed = true;
     }
-    if((eventSub & eventASCapable) &&
+    if((eventSub & eventBASCapable) &&
         (data.as_capable != client_data->as_capable))
         client_data->as_capable = data.as_capable;
     if(composite_eventSub)
         composite_client_data->composite_event = true;
-    if((composite_eventSub & eventGMOffset) &&
+    if((composite_eventSub & eventBGMOffset) &&
         (data.master_offset != composite_client_data->master_offset)) {
         composite_client_data->master_offset = data.master_offset;
         if(currentClientState->get_eventSub().in_range(thresholdGMOffset,
@@ -126,9 +126,9 @@ PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
         else
             composite_client_data->composite_event = false;
     }
-    if(composite_eventSub & eventSyncedToPrimaryClock)
+    if(composite_eventSub & eventBSyncedToPrimaryClock)
         composite_client_data->composite_event &= data.synced_to_primary_clock;
-    if(composite_eventSub & eventASCapable)
+    if(composite_eventSub & eventBASCapable)
         composite_client_data->composite_event &= data.as_capable;
     clkmgrCurrentState->as_capable = client_data->as_capable;
     clkmgrCurrentState->offset_in_range = client_data->master_offset_in_range;

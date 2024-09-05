@@ -26,18 +26,28 @@ constexpr std::uint8_t EVENT_MAX = 32;
 
 /**
  * @enum EventIndex
+ * @brief Index of events available for subscription. Each index corresponds to
+ * a specific event. The maximum number of events is defined by EVENT_MAX.
+ */
+typedef enum : std::uint8_t {
+    eventIGMOffset = 0, /**< Primary-secondary clock offset event */
+    eventISyncedToPrimaryClock = 1, /**< Synced to primary clock event */
+    eventIASCapable = 2, /**< IEEE 802.1AS capable event */
+    eventIGMChanged = 3, /**< Primary clock UUID changed event */
+    eventIComposite = 31 /**< Composite event */
+} EventIndex;
+
+/**
+ * @enum EventBitmask
  * @brief Bitmask of events available for subscription. Each bit represents one
  * event.
- * @note The eventLast is reserved for future use. The maximum number of events
- * is EVENT_MAX.
  */
 typedef enum : std::uint32_t {
-    eventGMOffset = 1 << 0, /**< Primary-secondary clock offset event */
-    eventSyncedToPrimaryClock = 1 << 1, /**< Synced to primary clock event */
-    eventASCapable = 1 << 2, /**< IEEE 802.1AS capable event */
-    eventGMChanged = 1 << 3, /**< Primary clock UUID changed event */
-    eventLast = 1 << 4 /**< Last event */
-} EventIndex;
+    eventBGMOffset = 1 << eventIGMOffset, /**< Bitmask for offset */
+    eventBSyncedToPrimaryClock = 1 << eventISyncedToPrimaryClock, /**< Synced */
+    eventBASCapable = 1 << eventIASCapable, /**< Bitmask for AS capable */
+    eventBGMChanged = 1 << eventIGMChanged, /**< Bitmask for UUID */
+} EventBitmask;
 
 constexpr std::uint8_t THRESHOLD_MAX = 8;
 

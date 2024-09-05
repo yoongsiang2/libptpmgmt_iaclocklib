@@ -49,10 +49,10 @@ int main(int argc, char *argv[])
     int retval;
     int opt;
 
-    subscription.event = (eventGMOffset | eventSyncedToPrimaryClock |
-        eventASCapable | eventGMChanged);
-    subscription.composite_event = (eventGMOffset |
-        eventSyncedToPrimaryClock | eventASCapable);
+    subscription.event = (eventBGMOffset | eventBSyncedToPrimaryClock |
+        eventBASCapable | eventBGMChanged);
+    subscription.composite_event = (eventBGMOffset |
+        eventBSyncedToPrimaryClock | eventBASCapable);
     subscription.value[gm_offset].upper = 100000;
     subscription.value[gm_offset].lower = -100000;
 
@@ -81,15 +81,15 @@ int main(int argc, char *argv[])
                    "Options:\n"
                    "  -s subscribe_event_mask\n"
                    "     Default: 0x%x\n"
-                   "     Bit 0: eventGMOffset\n"
-                   "     Bit 1: eventSyncedToPrimaryClock\n"
-                   "     Bit 2: eventASCapable\n"
-                   "     Bit 3: eventGMChanged\n"
+                   "     Bit 0: eventBGMOffset\n"
+                   "     Bit 1: eventBSyncedToPrimaryClock\n"
+                   "     Bit 2: eventBASCapable\n"
+                   "     Bit 3: eventBGMChanged\n"
                    "  -c composite_event_mask\n"
                    "     Default: 0x%x\n"
-                   "     Bit 0: eventGMOffset\n"
-                   "     Bit 1: eventSyncedToPrimaryClock\n"
-                   "     Bit 2: eventASCapable\n"
+                   "     Bit 0: eventBGMOffset\n"
+                   "     Bit 1: eventBSyncedToPrimaryClock\n"
+                   "     Bit 2: eventBASCapable\n"
                    "  -u upper master offset (ns)\n"
                    "     Default: %d ns\n"
                    "  -l lower master offset (ns)\n"
@@ -108,15 +108,15 @@ int main(int argc, char *argv[])
                    "Options:\n"
                    "  -s subscribe_event_mask\n"
                    "     Default: 0x%x\n"
-                   "     Bit 0: eventGMOffset\n"
-                   "     Bit 1: eventSyncedToPrimaryClock\n"
-                   "     Bit 2: eventASCapable\n"
-                   "     Bit 3: eventGMChanged\n"
+                   "     Bit 0: eventBGMOffset\n"
+                   "     Bit 1: eventBSyncedToPrimaryClock\n"
+                   "     Bit 2: eventBASCapable\n"
+                   "     Bit 3: eventBGMChanged\n"
                    "  -c composite_event_mask\n"
                    "     Default: 0x%x\n"
-                   "     Bit 0: eventGMOffset\n"
-                   "     Bit 1: eventSyncedToPrimaryClock\n"
-                   "     Bit 2: eventASCapable\n"
+                   "     Bit 0: eventBGMOffset\n"
+                   "     Bit 1: eventBSyncedToPrimaryClock\n"
+                   "     Bit 2: eventBASCapable\n"
                    "  -u upper master offset (ns)\n"
                    "     Default: %d ns\n"
                    "  -l lower master offset (ns)\n"
@@ -160,17 +160,17 @@ int main(int argc, char *argv[])
     if (subscription.event) {
         printf("+---------------------------+--------------------+\n");
     }
-    if (subscription.event & eventGMOffset) {
+    if (subscription.event & eventBGMOffset) {
         printf("| %-25s | %-18d |\n", "offset_in_range",
             state.offset_in_range);
     }
-    if (subscription.event & eventSyncedToPrimaryClock) {
+    if (subscription.event & eventBSyncedToPrimaryClock) {
         printf("| %-25s | %-18d |\n", "synced_to_primary_clock", state.synced_to_primary_clock);
     }
-    if (subscription.event & eventASCapable) {
+    if (subscription.event & eventBASCapable) {
         printf("| %-25s | %-18d |\n", "as_capable", state.as_capable);
     }
-    if (subscription.event & eventGMChanged) {
+    if (subscription.event & eventBGMChanged) {
         printf("| %-25s | %-18d |\n", "gm_Changed", state.gm_changed);
         printf("+---------------------------+--------------------+\n");
         printf("| %-25s | %02x%02x%02x.%02x%02x.%02x%02x%02x |\n", "UUID",
@@ -188,13 +188,13 @@ int main(int argc, char *argv[])
         printf("| %-25s | %-18d |\n", "composite_event",
             state.composite_event);
     }
-    if (subscription.composite_event & eventGMOffset) {
+    if (subscription.composite_event & eventBGMOffset) {
         printf("| - %-23s | %-18s |\n", "offset_in_range", " ");
     }
-    if (subscription.composite_event & eventSyncedToPrimaryClock) {
+    if (subscription.composite_event & eventBSyncedToPrimaryClock) {
         printf("| - %-19s | %-18s |\n", "synced_to_primary_clock", " ");
     }
-    if (subscription.composite_event & eventASCapable) {
+    if (subscription.composite_event & eventBASCapable) {
         printf("| - %-23s | %-18s |\n", "as_capable", " ");
     }
     if (subscription.composite_event) {
@@ -230,20 +230,20 @@ int main(int argc, char *argv[])
         if (subscription.event) {
         printf("+---------------------------+--------------+-------------+\n");
         }
-        if (subscription.event & eventGMOffset) {
+        if (subscription.event & eventBGMOffset) {
             printf("| %-25s | %-12d | %-11ld |\n", "offset_in_range",
                 state.offset_in_range,
                 event_count.offset_in_range_event_count);
         }
-        if (subscription.event & eventSyncedToPrimaryClock) {
+        if (subscription.event & eventBSyncedToPrimaryClock) {
             printf("| %-25s | %-12d | %-11ld |\n", "synced_to_primary_clock",
                state.synced_to_primary_clock, event_count.synced_to_primary_clock_event_count);
         }
-        if (subscription.event & eventASCapable) {
+        if (subscription.event & eventBASCapable) {
             printf("| %-25s | %-12d | %-11ld |\n", "as_capable",
                 state.as_capable, event_count.as_capable_event_count);
         }
-        if (subscription.event & eventGMChanged) {
+        if (subscription.event & eventBGMChanged) {
             printf("| %-25s | %-12d | %-11ld |\n", "gm_Changed",
                 state.gm_changed, event_count.gm_changed_event_count);
             printf("+---------------------------+--------------+-------------+\n");
@@ -262,13 +262,13 @@ int main(int argc, char *argv[])
             printf("| %-25s | %-12d | %-11ld |\n", "composite_event",
                    state.composite_event, event_count.composite_event_count);
         }
-        if (subscription.composite_event & eventGMOffset) {
+        if (subscription.composite_event & eventBGMOffset) {
             printf("| - %-23s | %-12s | %-11s |\n", "offset_in_range", "", "");
         }
-        if (subscription.composite_event & eventSyncedToPrimaryClock) {
+        if (subscription.composite_event & eventBSyncedToPrimaryClock) {
             printf("| - %-19s | %-12s | %-11s |\n", "synced_to_primary_clock", "", "");
         }
-        if (subscription.composite_event & eventASCapable) {
+        if (subscription.composite_event & eventBASCapable) {
             printf("| - %-23s | %-12s | %-11s |\n", "as_capable", "", "");
         }
         if (subscription.composite_event) {
