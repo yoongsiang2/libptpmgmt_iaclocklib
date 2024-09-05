@@ -36,7 +36,7 @@ class ClientState
     uint8_t ptp4l_id = 0; /**< PTP4L ID */
     clkmgr_state eventState = {}; /**< Event state */
     clkmgr_state_event_count eventStateCount = {}; /**< Event count */
-    clkmgr_subscription eventSub = {}; /**< Event subscription */
+    ClkMgrSubscription eventSub = {}; /**< Event subscription */
     struct timespec last_notification_time; /**< Last notification time */
 
   public:
@@ -139,7 +139,7 @@ class ClientState
      * @brief Get the event subscription
      * @return Reference to the event subscription
      */
-    clkmgr_subscription &get_eventSub();
+    ClkMgrSubscription &get_eventSub();
 
     DECLARE_ACCESSOR(sessionId); /**< Declare accessor for sessionId */
     DECLARE_ACCESSOR(ptp4l_id); /**< Declare accessor for ptp4l_id */

@@ -14,6 +14,7 @@
 #ifndef CLKMGR_SUBSCRIPTION_H
 #define CLKMGR_SUBSCRIPTION_H
 
+#include <array>
 #include <cstdint>
 #include <string>
 
@@ -21,130 +22,69 @@
 
 __CLKMGR_NAMESPACE_BEGIN
 
+constexpr std::uint8_t EVENT_MAX = 32;
+
 /**
- * Types for class clkmgr_value
+ * Index of events available for subscription. The value of index should be less
+ * than EVENT_MAX.
  */
 typedef enum : std::uint8_t {
-    gmOffsetValue, /**< GM offset value */
-    valueLast /**< Last value type */
-} valueType;
+    eventGMOffset,             /**< Primary-secondary clock offset event */
+    eventSyncedToPrimaryClock, /**< Synced to primary clock event */
+    eventASCapable,            /**< IEEE 802.1AS capable event */
+    eventGMChanged,            /**< Primary clock UUID changed event */
+    eventLast                  /**< Last event */
+} EventIndex;
 
-#define MAX_VALUE_COUNT 12
+constexpr std::uint8_t THRESHOLD_MAX = 8;
 
 /**
- * Class to hold upper and lower limits
+ * Index of events which require user to provide threshold. The value of index
+ * should be less than THRESHOLD_MAX.
  */
-class clkmgr_value
+typedef enum : std::uint8_t {
+    thresholdGMOffset,  /**< threshold for primary-secondary clock offset */
+    thresholdLast       /**< Last threshold */
+} ThresholdIndex;
+
+/**
+ * Class to hold event subscriptions
+ */
+class ClkMgrSubscription
 {
   private:
     /**
      * Structure to hold upper and lower limits
      */
-    struct value_t {
-        std::int32_t upper; /**< Upper limit */
-        std::int32_t lower; /**< Lower limit */
-        value_t();
-        value_t(uint32_t limit);
-        bool equal(const value_t &v);
-        bool operator== (const value_t &value) { return this->equal(value); }
-        bool operator!= (const value_t &value) { return !this->equal(value); }
-        void zero() { upper = 0; lower = 0; }
+    struct Threshold {
+        std::int32_t upper_limit; /**< Upper limit */
+        std::int32_t lower_limit; /**< Lower limit */
+        Threshold() noexcept : upper_limit(0), lower_limit(0) {}
     };
-    /**
-     * Array of values
-     */
-    value_t value[valueLast];
-    /**
-     * Reserved values
-     */
-    value_t reserved[MAX_VALUE_COUNT - sizeof(value) / sizeof(value[0])];
+    std::uint32_t event_mask; /**< Event subscription mask */
+    std::uint32_t composite_event_mask; /**< Composite event mask */
+    std::array<Threshold, THRESHOLD_MAX> threshold; /**< upper & lower limits */
   public:
-    std::uint8_t *parse(std::uint8_t *buf, std::size_t &length);
-    std::uint8_t *write(std::uint8_t *buf, std::size_t &length);
-    bool equal(const clkmgr_value &c);
-    bool operator== (const clkmgr_value &value) { return this->equal(value); }
-    bool operator!= (const clkmgr_value &value) { return !this->equal(value); }
+    ClkMgrSubscription() noexcept : event_mask(0), composite_event_mask(0) {}
+    DECLARE_ACCESSOR(event_mask); /**<event_mask accessor */
+    DECLARE_ACCESSOR(composite_event_mask); /**< composite_event_mask accessor */
+    DECLARE_ACCESSOR(threshold); /**< threshold accessor */
     /**
-     * @brief Set the upper and lower limits of a specific index in value array
-     * @param index Index of the value_t
+     * @brief Define the upper and lower limits of a specific event
+     * @param index Index of the event according to ThresholdIndex enum
      * @param upper Upper limit
      * @param lower Lower limit
+     * @return true on success, false on failure
      */
-    void setValue(int index, std::int32_t upper, std::int32_t lower) {
-        if(index >= 0 && index < valueLast) {
-            value[index].upper = upper;
-            value[index].lower = lower;
-        }
-    }
+    bool define_threshold(std::uint8_t index, std::int32_t upper,
+        std::int32_t lower);
     /**
-     * @brief Get the upper limit of a specific index in value array
-     * @param index Index of the value_t
-     * @return Upper limit
+     * @brief Check whether a given value is within predifined threshold
+     * @param index Index of the event according to ThresholdIndex enum
+     * @param value current value
+     * @return true if in range, false otherwise
      */
-    std::int32_t getUpper(int index) {
-        if(index >= 0 && index < valueLast)
-            return value[index].upper;
-        return 0;
-    }
-    /**
-     * @brief Get the lower limit of a specific index in value array
-     * @param index Index of the value_t
-     * @return Lower limit
-     */
-    std::int32_t getLower(int index) {
-        if(index >= 0 && index < valueLast)
-            return value[index].lower;
-        return 0;
-    }
-    std::string toString();
-};
-
-#define BITS_PER_BYTE (8)
-#define MAX_EVENT_COUNT (32)
-
-/**
- * Types of PTP events subscription
- */
-typedef enum : std::uint8_t {
-    gmOffsetEvent, /**< Primary-secondary clock offset event */
-    syncedToPrimaryClockEvent, /**< Synced to primary clock event */
-    asCapableEvent, /**< IEEE 802.1AS capable event */
-    gmChangedEvent, /**< Primary clock UUID changed event */
-    eventLast /**< Last event type */
-} eventType;
-
-/**
- * Class to hold event counts
- */
-class clkmgr_eventcount
-{
-    std::uint32_t count[eventLast]; /**< Event counts */
-    /**
-     * Reserved event counts
-     */
-    std::uint32_t reserved[MAX_EVENT_COUNT - eventLast];
-  public:
-    std::uint8_t *parse(std::uint8_t *buf, std::size_t &length);
-    std::uint8_t *write(std::uint8_t *buf, std::size_t &length);
-    void zero();
-    bool equal(const clkmgr_eventcount &ec);
-    bool operator== (const clkmgr_eventcount &ec) { return this->equal(ec); }
-    bool operator!= (const clkmgr_eventcount &ec) { return !this->equal(ec); }
-};
-
-/**
- * Class to hold event subscriptions
- */
-class clkmgr_subscription
-{
-  private:
-    std::uint32_t event_mask; /**< Event subscription mask */
-    clkmgr_value value; /**< value of upper and lower limits */
-    std::uint32_t composite_event_mask; /**< Composite event mask */
-  public:
-    DECLARE_ACCESSOR(event_mask); /**< Declare accessor for event */
-    DECLARE_ACCESSOR(value); /**< Declare accessor for value */
-    DECLARE_ACCESSOR(composite_event_mask); /**< Declare accessor for composite event */
+    bool in_range(std::uint8_t index, std::int32_t value) const;
 };
 
 __CLKMGR_NAMESPACE_END

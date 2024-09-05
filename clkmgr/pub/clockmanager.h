@@ -75,7 +75,7 @@ class ClkmgrClientApi
      * @param[out] currentState Reference to the current state
      * @return true on success, false on failure
      */
-    bool clkmgr_subscribe(clkmgr_subscription &newSub,
+    bool clkmgr_subscribe(ClkMgrSubscription &newSub,
         clkmgr_state &currentState);
 
     /**

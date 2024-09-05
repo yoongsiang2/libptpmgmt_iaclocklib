@@ -78,7 +78,7 @@ bool ClkmgrClientApi::clkmgr_connect()
     return true;
 }
 
-bool ClkmgrClientApi::clkmgr_subscribe(clkmgr_subscription &newSub,
+bool ClkmgrClientApi::clkmgr_subscribe(ClkMgrSubscription &newSub,
     clkmgr_state &currentState)
 {
     unsigned int timeout_sec = (unsigned int) DEFAULT_SUBSCRIBE_TIME_OUT;
@@ -93,7 +93,7 @@ bool ClkmgrClientApi::clkmgr_subscribe(clkmgr_subscription &newSub,
     cmsg->setClientState(&appClientState);
     /* Write the current event subscription */
     appClientState.get_eventSub().set_event_mask(newSub.getc_event_mask());
-    appClientState.get_eventSub().set_value(newSub.getc_value());
+    appClientState.get_eventSub().set_threshold(newSub.getc_threshold());
     appClientState.get_eventSub().set_composite_event_mask(
         newSub.getc_composite_event_mask());
     /* Copy the event Mask */

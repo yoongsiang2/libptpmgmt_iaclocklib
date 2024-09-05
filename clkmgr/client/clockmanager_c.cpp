@@ -41,11 +41,11 @@ bool clkmgr_c_subscribe(clkmgr_c_client_ptr client_ptr,
     struct clkmgr_c_subscription sub,
     struct clkmgr_c_state *current_state)
 {
-    clkmgr::clkmgr_subscription newsub = {};
+    clkmgr::ClkMgrSubscription newsub = {};
     clkmgr::clkmgr_state state = {};
     bool ret;
     newsub.set_event_mask(sub.event);
-    newsub.get_value().setValue(gm_offset, sub.value[gm_offset].upper,
+    newsub.define_threshold(clkmgr::thresholdGMOffset, sub.value[gm_offset].upper,
         sub.value[gm_offset].lower);
     newsub.set_composite_event_mask(sub.composite_event);
     ret = static_cast<clkmgr::ClkmgrClientApi *>(client_ptr)->clkmgr_subscribe(

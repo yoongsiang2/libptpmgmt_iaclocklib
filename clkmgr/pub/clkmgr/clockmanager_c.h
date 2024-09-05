@@ -21,12 +21,12 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-/** Types of PTP events subscription */
+/** Types of events subscription */
 enum event_type {
-    gmOffsetEvent,                /**< Primary-secondary clock offset event */
-    syncedToPrimaryClockEvent,    /**< Synced to primary clock event */
-    asCapableEvent,               /**< IEEE 802.1AS capable event */
-    gmChangedEvent,               /**< Primary clock UUID changed event */
+    eventGMOffset,                /**< Primary-secondary clock offset event */
+    eventSyncedToPrimaryClock,    /**< Synced to primary clock event */
+    eventASCapable,               /**< IEEE 802.1AS capable event */
+    eventGMChanged,               /**< Primary clock UUID changed event */
     eventLast                     /**< Last event type */
 };
 

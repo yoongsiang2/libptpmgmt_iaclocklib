@@ -125,7 +125,7 @@ string ClientState::toString()
     return name;
 }
 
-clkmgr_subscription &ClientState::get_eventSub()
+ClkMgrSubscription &ClientState::get_eventSub()
 {
     return eventSub;
 }

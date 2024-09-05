@@ -81,10 +81,6 @@ PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
     sessionId_t currentSessionID = currentClientState->get_sessionId();
     std::map <sessionId_t, std::array<client_ptp_event *, 2>>::iterator it;
     client_ptp_event *client_data, *composite_client_data;
-    int64_t lower_master_offset =
-        currentClientState->get_eventSub().get_value().getLower(gmOffsetValue);
-    int64_t upper_master_offset =
-        currentClientState->get_eventSub().get_value().getUpper(gmOffsetValue);
     it = client_ptp_event_map.find(currentSessionID);
     if(it == client_ptp_event_map.end()) {
         /* Creation of a new map item for this new sessionID */
@@ -99,40 +95,40 @@ PARSE_RXBUFFER_TYPE(ClientSubscribeMessage::parseBuffer)
         client_data = it->second[0];
         composite_client_data = it->second[1];
     }
-    if((eventSub & 1 << gmOffsetEvent) &&
+    if((eventSub & 1 << eventGMOffset) &&
         (data.master_offset != client_data->master_offset)) {
         client_data->master_offset = data.master_offset;
-        if((client_data->master_offset > lower_master_offset) &&
-            (client_data->master_offset < upper_master_offset))
+        if(currentClientState->get_eventSub().in_range(thresholdGMOffset,
+                client_data->master_offset))
             client_data->master_offset_in_range = true;
     }
-    if((eventSub & 1 << syncedToPrimaryClockEvent) &&
+    if((eventSub & 1 << eventSyncedToPrimaryClock) &&
         (data.synced_to_primary_clock != client_data->synced_to_primary_clock))
         client_data->synced_to_primary_clock = data.synced_to_primary_clock;
-    if((eventSub & 1 << gmChangedEvent) &&
+    if((eventSub & 1 << eventGMChanged) &&
         (memcmp(client_data->gm_identity, data.gm_identity,
                 sizeof(data.gm_identity))) != 0) {
         memcpy(client_data->gm_identity, data.gm_identity,
             sizeof(data.gm_identity));
         clkmgrCurrentState->gm_changed = true;
     }
-    if((eventSub & 1 << asCapableEvent) &&
+    if((eventSub & 1 << eventASCapable) &&
         (data.as_capable != client_data->as_capable))
         client_data->as_capable = data.as_capable;
     if(composite_eventSub)
         composite_client_data->composite_event = true;
-    if((composite_eventSub & 1 << gmOffsetEvent) &&
+    if((composite_eventSub & 1 << eventGMOffset) &&
         (data.master_offset != composite_client_data->master_offset)) {
         composite_client_data->master_offset = data.master_offset;
-        if((composite_client_data->master_offset > lower_master_offset) &&
-            (composite_client_data->master_offset < upper_master_offset))
+        if(currentClientState->get_eventSub().in_range(thresholdGMOffset,
+                client_data->master_offset))
             composite_client_data->composite_event = true;
         else
             composite_client_data->composite_event = false;
     }
-    if(composite_eventSub & 1 << syncedToPrimaryClockEvent)
+    if(composite_eventSub & 1 << eventSyncedToPrimaryClock)
         composite_client_data->composite_event &= data.synced_to_primary_clock;
-    if(composite_eventSub & 1 << asCapableEvent)
+    if(composite_eventSub & 1 << eventASCapable)
         composite_client_data->composite_event &= data.as_capable;
     clkmgrCurrentState->as_capable = client_data->as_capable;
     clkmgrCurrentState->offset_in_range = client_data->master_offset_in_range;

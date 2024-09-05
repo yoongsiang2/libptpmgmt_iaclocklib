@@ -12,87 +12,27 @@
  *
  */
 
-#include <cstring>
-
 #include <clkmgr/subscription.h>
-#include <common/print.hpp>
-#include <common/serialize.hpp>
 
 __CLKMGR_NAMESPACE_USE
 
-using namespace std;
-
-clkmgr_value::value_t::value_t()
+bool ClkMgrSubscription::define_threshold(std::uint8_t index, std::int32_t upper,
+    std::int32_t lower)
 {
-    upper = 0;
-    lower = 0;
-}
-
-clkmgr_value::value_t::value_t(uint32_t limit)
-{
-    upper = limit;
-    lower = limit;
-}
-
-bool clkmgr_value::value_t::equal(const value_t &v)
-{
-    if(this->upper == v.upper && this->lower == v.lower)
+    if(index < static_cast<std::uint8_t>(thresholdLast)) {
+        threshold[index].upper_limit = upper;
+        threshold[index].lower_limit = lower;
         return true;
+    }
     return false;
 }
 
-uint8_t *clkmgr_value::parse(uint8_t *buf, std::size_t &length)
+bool ClkMgrSubscription::in_range(std::uint8_t index, std::int32_t value) const
 {
-    return buf;
-}
-
-uint8_t *clkmgr_value::write(uint8_t *buf, std::size_t &length)
-{
-    for(size_t i = 0; i < sizeof(value) / sizeof(value[0]) && buf != nullptr; ++i)
-        buf += WRITE_FIELD(value[i], buf, length);
-    for(size_t i = 0; i < sizeof(reserved) / sizeof(reserved[0]) &&
-        buf != nullptr; ++i)
-        reserved[i].zero();
-    return buf;
-}
-
-bool clkmgr_value::equal(const clkmgr_value &c)
-{
-    if(memcmp(this->value, c.value, sizeof(this->value)) == 0)
-        return true;
+    if(index < static_cast<std::uint8_t>(thresholdLast)) {
+        if(value > threshold[index].lower_limit &&
+            value < threshold[index].upper_limit)
+            return true;
+    }
     return false;
-}
-
-uint8_t *clkmgr_eventcount::parse(uint8_t *buf, std::size_t &length)
-{
-    return buf;
-}
-
-uint8_t *clkmgr_eventcount::write(uint8_t *buf, std::size_t &length)
-{
-    for(size_t i = 0; i < sizeof(count) / sizeof(count[0]) && buf != nullptr; ++i)
-        buf += WRITE_FIELD(count[i], buf, length);
-    memset(reserved, 0, sizeof(reserved));
-    return buf;
-}
-
-void clkmgr_eventcount::zero()
-{
-    for(size_t i = 0; i < sizeof(count) / sizeof(count[0]); ++i)
-        count[i] = 0;
-    memset(reserved, 0, sizeof(reserved));
-}
-
-bool clkmgr_eventcount::equal(const clkmgr_eventcount &ec)
-{
-    if(memcmp(this->count, ec.count, sizeof(this->count)) == 0)
-        return true;
-    return false;
-}
-
-std::string clkmgr_value::toString()
-{
-    std::string name = "clkmgr_value : upper " + to_string(this->value->upper) +
-        " lower : " +  to_string(this->value->lower) + "\n";
-    return name;
 }

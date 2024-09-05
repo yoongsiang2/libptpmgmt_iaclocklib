@@ -129,20 +129,16 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
         composite_client_ptp_data =
             ClientSubscribeMessage::getClientPtpEventCompositeStruct(
                 currentClientState->get_sessionId());
-        int64_t lower_master_offset =
-            currentClientState->get_eventSub().get_value().getLower(gmOffsetValue);
-        int64_t upper_master_offset =
-            currentClientState->get_eventSub().get_value().getUpper(gmOffsetValue);
         if(client_ptp_data == nullptr) {
             PrintDebug("ClientNotificationMessage::processMessage \
                 ERROR in obtaining client_ptp_data.\n");
             return false;
         }
-        if((eventSub & 1 << gmOffsetEvent) &&
+        if((eventSub & 1 << eventGMOffset) &&
             (proxy_data.master_offset != client_ptp_data->master_offset)) {
             client_ptp_data->master_offset = proxy_data.master_offset;
-            if((client_ptp_data->master_offset > lower_master_offset) &&
-                (client_ptp_data->master_offset < upper_master_offset)) {
+            if(currentClientState->get_eventSub().in_range(thresholdGMOffset,
+                client_ptp_data->master_offset)) {
                 if(!(client_ptp_data->master_offset_in_range)) {
                     client_ptp_data->master_offset_in_range = true;
                     client_ptp_data->offset_in_range_event_count.fetch_add(1,
@@ -156,7 +152,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
                 }
             }
         }
-        if((eventSub & 1 << syncedToPrimaryClockEvent) &&
+        if((eventSub & 1 << eventSyncedToPrimaryClock) &&
             (proxy_data.synced_to_primary_clock !=
                 client_ptp_data->synced_to_primary_clock)) {
             client_ptp_data->synced_to_primary_clock =
@@ -164,7 +160,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             client_ptp_data->synced_to_primary_clock_event_count.fetch_add(1,
                 std::memory_order_relaxed);
         }
-        if((eventSub & 1 << gmChangedEvent) &&
+        if((eventSub & 1 << eventGMChanged) &&
             (memcmp(client_ptp_data->gm_identity, proxy_data.gm_identity,
                     sizeof(proxy_data.gm_identity)) != 0)) {
             memcpy(client_ptp_data->gm_identity, proxy_data.gm_identity,
@@ -174,7 +170,7 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             clkmgrCurrentState.gm_changed = true;
         } else
             clkmgrCurrentState.gm_changed = false;
-        if((eventSub & 1 << asCapableEvent) &&
+        if((eventSub & 1 << eventASCapable) &&
             (proxy_data.as_capable != client_ptp_data->as_capable)) {
             client_ptp_data->as_capable = proxy_data.as_capable;
             client_ptp_data->as_capable_event_count.fetch_add(1,
@@ -184,18 +180,18 @@ PROCESS_MESSAGE_TYPE(ClientNotificationMessage::processMessage)
             old_composite_event = composite_client_ptp_data->composite_event;
             composite_client_ptp_data->composite_event = true;
         }
-        if(composite_eventSub & 1 << gmOffsetEvent) {
+        if(composite_eventSub & 1 << eventGMOffset) {
             composite_client_ptp_data->master_offset = proxy_data.master_offset;
-            if((composite_client_ptp_data->master_offset > lower_master_offset) &&
-                (composite_client_ptp_data->master_offset < upper_master_offset))
+            if(currentClientState->get_eventSub().in_range(thresholdGMOffset,
+                client_ptp_data->master_offset))
                 composite_client_ptp_data->composite_event = true;
             else
                 composite_client_ptp_data->composite_event = false;
         }
-        if(composite_eventSub & 1 << syncedToPrimaryClockEvent)
+        if(composite_eventSub & 1 << eventSyncedToPrimaryClock)
             composite_client_ptp_data->composite_event &=
                 proxy_data.synced_to_primary_clock;
-        if(composite_eventSub & 1 << asCapableEvent)
+        if(composite_eventSub & 1 << eventASCapable)
             composite_client_ptp_data->composite_event &= proxy_data.as_capable;
         if(composite_eventSub &&
             (old_composite_event != composite_client_ptp_data->composite_event))
