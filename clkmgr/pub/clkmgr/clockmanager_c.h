@@ -21,13 +21,12 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-/** Types of events subscription */
 enum event_type {
-    eventGMOffset,                /**< Primary-secondary clock offset event */
-    eventSyncedToPrimaryClock,    /**< Synced to primary clock event */
-    eventASCapable,               /**< IEEE 802.1AS capable event */
-    eventGMChanged,               /**< Primary clock UUID changed event */
-    eventLast                     /**< Last event type */
+    eventGMOffset = 1 << 0, /**< Primary-secondary clock offset event */
+    eventSyncedToPrimaryClock = 1 << 1, /**< Synced to primary clock event */
+    eventASCapable = 1 << 2, /**< IEEE 802.1AS capable event */
+    eventGMChanged = 1 << 3, /**< Primary clock UUID changed event */
+    eventLast = 1 << 4 /**< Last event */
 };
 
 /** Types for struct value */

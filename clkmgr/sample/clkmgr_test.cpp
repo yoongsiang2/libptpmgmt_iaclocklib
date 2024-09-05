@@ -61,12 +61,12 @@ int main(int argc, char *argv[])
     int opt;
 
     std::uint32_t event2Sub = {
-        ((1<<eventGMOffset) | (1<<eventSyncedToPrimaryClock) | (1<<eventASCapable) |
-        (1<<eventGMChanged))
+        (eventGMOffset | eventSyncedToPrimaryClock | eventASCapable |
+        eventGMChanged)
     };
 
     std::uint32_t composite_event = {
-        ((1<<eventGMOffset) | (1<<eventSyncedToPrimaryClock) | (1<<eventASCapable))
+        (eventGMOffset | eventSyncedToPrimaryClock | eventASCapable)
     };
 
     while ((opt = getopt(argc, argv, "s:c:u:l:i:t:h")) != -1) {
@@ -183,17 +183,17 @@ int main(int argc, char *argv[])
     if (event2Sub) {
         printf("+---------------------------+--------------------+\n");
     }
-    if (event2Sub & (1<<eventGMOffset)) {
+    if (event2Sub & eventGMOffset) {
         printf("| %-25s | %-18d |\n", "offset_in_range",
             state.offset_in_range);
     }
-    if (event2Sub & (1<<eventSyncedToPrimaryClock)) {
+    if (event2Sub & eventSyncedToPrimaryClock) {
         printf("| %-25s | %-18d |\n", "synced_to_primary_clock", state.synced_to_primary_clock);
     }
-    if (event2Sub & (1<<eventASCapable)) {
+    if (event2Sub & eventASCapable) {
         printf("| %-25s | %-18d |\n", "as_capable", state.as_capable);
     }
-    if (event2Sub & (1<<eventGMChanged)) {
+    if (event2Sub & eventGMChanged) {
         printf("| %-25s | %-18d |\n", "gm_Changed", state.gm_changed);
         printf("+---------------------------+--------------------+\n");
         printf("| %-25s | %02x%02x%02x.%02x%02x.%02x%02x%02x |\n", "UUID",
@@ -211,13 +211,13 @@ int main(int argc, char *argv[])
         printf("| %-25s | %-18d |\n", "composite_event",
             state.composite_event);
     }
-    if (composite_event & (1<<eventGMOffset)) {
+    if (composite_event & eventGMOffset) {
         printf("| - %-23s | %-18s |\n", "offset_in_range", " ");
     }
-    if (composite_event & (1<<eventSyncedToPrimaryClock)) {
+    if (composite_event & eventSyncedToPrimaryClock) {
         printf("| - %-19s | %-18s |\n", "synced_to_primary_clock", " ");
     }
-    if (composite_event & (1<<eventASCapable)) {
+    if (composite_event & eventASCapable) {
         printf("| - %-23s | %-18s |\n", "as_capable", " ");
     }
     if (composite_event) {
@@ -253,20 +253,20 @@ int main(int argc, char *argv[])
         if (event2Sub) {
         printf("+---------------------------+--------------+-------------+\n");
         }
-        if (event2Sub & (1<<eventGMOffset)) {
+        if (event2Sub & eventGMOffset) {
             printf("| %-25s | %-12d | %-11ld |\n", "offset_in_range",
                 state.offset_in_range,
                 eventCount.offset_in_range_event_count);
         }
-        if (event2Sub & (1<<eventSyncedToPrimaryClock)) {
+        if (event2Sub & eventSyncedToPrimaryClock) {
             printf("| %-25s | %-12d | %-11ld |\n", "synced_to_primary_clock",
                state.synced_to_primary_clock, eventCount.synced_to_primary_clock_event_count);
         }
-        if (event2Sub & (1<<eventASCapable)) {
+        if (event2Sub & eventASCapable) {
             printf("| %-25s | %-12d | %-11ld |\n", "as_capable",
                 state.as_capable, eventCount.as_capable_event_count);
         }
-        if (event2Sub & (1<<eventGMChanged)) {
+        if (event2Sub & eventGMChanged) {
             printf("| %-25s | %-12d | %-11ld |\n", "gm_Changed",
                 state.gm_changed, eventCount.gm_changed_event_count);
             printf("+---------------------------+--------------+-------------+\n");
@@ -285,13 +285,13 @@ int main(int argc, char *argv[])
             printf("| %-25s | %-12d | %-11ld |\n", "composite_event",
                    state.composite_event, eventCount.composite_event_count);
         }
-        if (composite_event & (1<<eventGMOffset)) {
+        if (composite_event & eventGMOffset) {
             printf("| - %-23s | %-12s | %-11s |\n", "offset_in_range", "", "");
         }
-        if (composite_event & (1<<eventSyncedToPrimaryClock)) {
+        if (composite_event & eventSyncedToPrimaryClock) {
             printf("| - %-19s | %-12s | %-11s |\n", "synced_to_primary_clock", "", "");
         }
-        if (composite_event & (1<<eventASCapable)) {
+        if (composite_event & eventASCapable) {
             printf("| - %-23s | %-12s | %-11s |\n", "as_capable", "", "");
         }
         if (composite_event) {

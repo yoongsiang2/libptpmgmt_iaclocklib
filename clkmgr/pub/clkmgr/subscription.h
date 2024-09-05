@@ -25,15 +25,14 @@ __CLKMGR_NAMESPACE_BEGIN
 constexpr std::uint8_t EVENT_MAX = 32;
 
 /**
- * Index of events available for subscription. The value of index should be less
- * than EVENT_MAX.
+ * Bitmask of events available for subscription. Each bit represents one event.
  */
-typedef enum : std::uint8_t {
-    eventGMOffset,             /**< Primary-secondary clock offset event */
-    eventSyncedToPrimaryClock, /**< Synced to primary clock event */
-    eventASCapable,            /**< IEEE 802.1AS capable event */
-    eventGMChanged,            /**< Primary clock UUID changed event */
-    eventLast                  /**< Last event */
+typedef enum : std::uint32_t {
+    eventGMOffset = 1 << 0, /**< Primary-secondary clock offset event */
+    eventSyncedToPrimaryClock = 1 << 1, /**< Synced to primary clock event */
+    eventASCapable = 1 << 2, /**< IEEE 802.1AS capable event */
+    eventGMChanged = 1 << 3, /**< Primary clock UUID changed event */
+    eventLast = 1 << 4 /**< Last event */
 } EventIndex;
 
 constexpr std::uint8_t THRESHOLD_MAX = 8;
