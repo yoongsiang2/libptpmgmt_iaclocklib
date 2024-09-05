@@ -4,7 +4,7 @@
  */
 
 /** @file subscription.h
- * @brief structure and class needed for events subsciption
+ * @brief class, structures and enums used for events subsciption
  *
  * @author Christopher Hall <christopher.s.hall@intel.com>
  * @copyright © 2024 Intel Corporation.
@@ -25,7 +25,11 @@ __CLKMGR_NAMESPACE_BEGIN
 constexpr std::uint8_t EVENT_MAX = 32;
 
 /**
- * Bitmask of events available for subscription. Each bit represents one event.
+ * @enum EventIndex
+ * @brief Bitmask of events available for subscription. Each bit represents one
+ * event.
+ * @note The eventLast is reserved for future use. The maximum number of events
+ * is EVENT_MAX.
  */
 typedef enum : std::uint32_t {
     eventGMOffset = 1 << 0, /**< Primary-secondary clock offset event */
@@ -38,8 +42,10 @@ typedef enum : std::uint32_t {
 constexpr std::uint8_t THRESHOLD_MAX = 8;
 
 /**
- * Index of events which require user to provide threshold. The value of index
- * should be less than THRESHOLD_MAX.
+ * @enum ThresholdIndex
+ * @brief Index of events which require user to provide threshold.
+ * @note The thresholdLast is reserved for future use. The maximum number of
+ * events which can have threshold is THRESHOLD_MAX.
  */
 typedef enum : std::uint8_t {
     thresholdGMOffset,  /**< threshold for primary-secondary clock offset */
@@ -47,41 +53,48 @@ typedef enum : std::uint8_t {
 } ThresholdIndex;
 
 /**
- * Class to hold event subscriptions
+ * @class ClkMgrSubscription
+ * @brief Class to hold the event subscription mask, composite event mask, and
+ * thresholds for events that require user-defined limits.
  */
 class ClkMgrSubscription
 {
   private:
     /**
-     * Structure to hold upper and lower limits
+     * @struct Threshold
+     * @brief Structure to hold upper and lower limits
      */
     struct Threshold {
         std::int32_t upper_limit; /**< Upper limit */
         std::int32_t lower_limit; /**< Lower limit */
         Threshold() noexcept : upper_limit(0), lower_limit(0) {}
     };
+
     std::uint32_t event_mask; /**< Event subscription mask */
     std::uint32_t composite_event_mask; /**< Composite event mask */
     std::array<Threshold, THRESHOLD_MAX> threshold; /**< upper & lower limits */
+
   public:
     ClkMgrSubscription() noexcept : event_mask(0), composite_event_mask(0) {}
-    DECLARE_ACCESSOR(event_mask); /**<event_mask accessor */
-    DECLARE_ACCESSOR(composite_event_mask); /**< composite_event_mask accessor */
+    DECLARE_ACCESSOR(event_mask); /**<event mask accessor */
+    DECLARE_ACCESSOR(composite_event_mask); /**< composite event accessor */
     DECLARE_ACCESSOR(threshold); /**< threshold accessor */
+
     /**
      * @brief Define the upper and lower limits of a specific event
-     * @param index Index of the event according to ThresholdIndex enum
-     * @param upper Upper limit
-     * @param lower Lower limit
+     * @param[in] index Index of the event according to ThresholdIndex enum
+     * @param[in] upper Upper limit
+     * @param[in] lower Lower limit
      * @return true on success, false on failure
      */
     bool define_threshold(std::uint8_t index, std::int32_t upper,
         std::int32_t lower);
+
     /**
      * @brief Check whether a given value is within predifined threshold
-     * @param index Index of the event according to ThresholdIndex enum
-     * @param value current value
-     * @return true if in range, false otherwise
+     * @param[in] index Index of the event according to ThresholdIndex enum
+     * @param[in] value Current value
+     * @return Return true if value is within the threshold, and false otherwise
      */
     bool in_range(std::uint8_t index, std::int32_t value) const;
 };
