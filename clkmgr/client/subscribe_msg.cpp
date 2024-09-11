@@ -162,7 +162,6 @@ PROCESS_MESSAGE_TYPE(ClientSubscribeMessage::processMessage)
     /* Add the current ClientState to the notification class */
     ClientNotificationMessage::addClientState(currentClientState);
     this->set_msgAck(ACK_NONE);
-    clkmgr_event_state clkmgrCurrentState = currentClientState->get_eventState();
     cv.notify_one(lock);
     return true;
 }
